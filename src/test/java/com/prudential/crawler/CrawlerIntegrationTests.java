@@ -9,15 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 import org.junit.Test;
 
 import com.prudential.webcrawler.processor.PageProcessor;
 import com.prudential.webcrawler.processor.PageProcessorImpl;
 import com.prudential.webcrawler.service.WebCrawlerImpl;
-import com.prudential.webcrawler.threadpool.ConcurrentScanner;
 import com.prudential.webcrawler.util.DataContainer;
 
 public class CrawlerIntegrationTests {
@@ -66,8 +65,9 @@ public class CrawlerIntegrationTests {
 
 		ExecutorService executor = Executors.newFixedThreadPool(3);
 
-		IntStream.range(0, 3).forEach(i -> executor.submit(new ConcurrentScanner(holder)));
-
+		Future future = executor.submit(() -> {
+			 new WebCrawlerImpl(holder).scanPage();
+			 });
 		executor.shutdown();
 		executor.awaitTermination(5, TimeUnit.MINUTES);
 
